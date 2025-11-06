@@ -31,8 +31,8 @@ jobs:
             gnupg2 libnss3 libxss1 libx11-xcb1 libxcomposite1 libatk-bridge2.0-0 \
             libatk1.0-0 libcups2 libdbus-1-3 libnspr4 libxrandr2 libxshmfence1 \
             libgtk-3-0 fonts-liberation libappindicator3-1 libx11-dev libxrender-dev
-      - name:  Clone runner repository
-        run: git clone https://github.com/Ven0d4y/caps-csrf.git
+      - name:  Clone Caps-csrf repository
+        run: git clone https://github.com/Ven0d4y/Caps-csrf.git
 
       - name:  Install Python dependencies
         run: |
@@ -40,7 +40,7 @@ jobs:
           pip install requests tqdm semgrep
       - name: Run download worker (auto defaults if missing)
         run: |
-          cd runner
+          cd Caps-csrf
           MIN=${{ github.event.inputs.min_installs }}
           MAX=${{ github.event.inputs.max_installs }}
           if [ -z "$MIN" ]; then MIN=100; fi
@@ -49,7 +49,7 @@ jobs:
           python3 downloader.py --min "$MIN" --max "$MAX"
       - name:  Extract all downloaded plugins and delete ZIPs
         run: |
-          cd runner
+          cd Caps-csrf
           mkdir -p extracted_plugins
           echo "🗜️ Extracting all plugins..."
           for zip in plugins/*.zip; do
@@ -64,9 +64,9 @@ jobs:
           ls -la extracted_plugins | head
       - name: Run Semgrep with custom rule (capabilities.yaml)
         run: |
-          cd runner
+          cd Caps-csrf
           if [ ! -f "capabilities.yaml" ]; then
-            echo "capabilities.yaml not found in runner directory"
+            echo "capabilities.yaml not found in Caps-csrf directory"
             exit 1
           fi
           echo "🔍 Running Semgrep with custom rule..."
@@ -76,10 +76,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: semgrep-report-${{ github.run_id }}
-          path: runner/semgrep-results.json
+          path: Caps-csrf/semgrep-results.json
 
       - name: Upload extracted plugins (optional)
         uses: actions/upload-artifact@v4
         with:
           name: extracted-plugins-${{ github.run_id }}
-          path: runner/extracted_plugins/
+          path: Caps-csrf/extracted_plugins/
